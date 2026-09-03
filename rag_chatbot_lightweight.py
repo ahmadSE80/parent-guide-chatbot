@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import numpy as np
 from google import genai
@@ -69,6 +69,9 @@ else:
 
 print("Chatbot is ready! (lightweight mode - no local ML model loaded)")
 
+@app.route("/")
+def home():
+    return render_template("chat_ui.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
