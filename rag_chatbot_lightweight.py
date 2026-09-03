@@ -43,6 +43,20 @@ def embed_text(text, max_retries=3):
             else:
                 raise
 
+def generate_with_retry(prompt, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model=GENERATION_MODEL,
+                contents=prompt
+            )
+            return response.text
+        except Exception as e:
+            print(f"Generation attempt {attempt+1} failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+            else:
+                return "I'm having trouble generating a response right now — please try again in a moment."
 
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
@@ -72,13 +86,11 @@ print("Chatbot is ready! (lightweight mode - no local ML model loaded)")
 @app.route("/")
 def home():
     return render_template("chat_ui.html")
-
 @app.route("/chat", methods=["POST"])
 def chat():
     user_question = request.json.get("question", "")
     if user_question.strip() == "":
         return jsonify({"answer": "Please ask a valid question."})
-
 
     user_embedding = embed_text(user_question)
 
@@ -120,15 +132,7 @@ User message: {user_question}
 
 Answer:"""
 
-    try:
-        response = client.models.generate_content(
-            model=GENERATION_MODEL,
-            contents=prompt
-        )
-        generated_answer = response.text
-    except Exception as e:
-        print(f"Generation error: {e}")
-        generated_answer = "I'm having trouble generating a response right now — please try again in a moment."
+    generated_answer = generate_with_retry(prompt)
 
     return jsonify({
         "answer": generated_answer,
