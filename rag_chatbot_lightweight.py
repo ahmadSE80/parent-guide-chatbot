@@ -11,7 +11,7 @@ app = Flask(__name__)
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 EMBEDDING_MODEL = "gemini-embedding-001"
-GENERATION_MODEL = "gemini-2.5-flash"
+GENERATION_MODEL = "gemini-3.6-flash"
 
 CONFIDENCE_THRESHOLD = 0.6
 TOP_K = 3
