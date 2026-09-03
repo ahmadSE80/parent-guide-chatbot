@@ -54,7 +54,7 @@ def generate_with_retry(prompt, max_retries=3):
         except Exception as e:
             print(f"Generation attempt {attempt+1} failed: {e}")
             if attempt < max_retries - 1:
-                time.sleep(5)
+                time.sleep(2)
             else:
                 return "I'm having trouble generating a response right now — please try again in a moment."
 
